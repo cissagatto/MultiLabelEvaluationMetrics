@@ -9,7 +9,7 @@ A Python implementation of various metrics for evaluating multi-label classifica
   author = {Elaine Cecília Gatto},
   title = {Multilabel Evalation Metrics: a python implementation for multilabel classification and multilabel ranking models evaluation},  
   year = {2024},  
-  doi = {},
+  doi = {10.13140/RG.2.2.25706.73925},
   url = {https://github.com/cissagatto/MultiLabelEvaluationMetrics}
 }
 ```
