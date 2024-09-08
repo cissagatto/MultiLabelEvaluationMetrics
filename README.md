@@ -110,6 +110,7 @@ print(metrics_df)
   - `one-error`
   - `ranking-loss`
   - `ranking-error`
+  - `one_error`
   
 - **Label Problem Metrics** (manually implemented):
   - `clp` (Constant Label Problem)
