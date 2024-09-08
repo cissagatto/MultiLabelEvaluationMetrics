@@ -34,26 +34,66 @@ To install and use the metrics, follow these steps:
 The metrics can be directly called to evaluate your multi-label classification models. Here's a sample usage:
 
 ```python
-from evaluation import get_all_measures_names
+# Sample data
+    true_labels = pd.DataFrame({
+        'L1': [1, 0, 1, 1],
+        'L2': [0, 1, 1, 0],
+        'L3': [0, 0, 1, 1],
+        'L4': [1, 1, 0, 1]
+    })
+    pred_labels = pd.DataFrame({
+        'L1': [1, 0, 0, 1],
+        'L2': [0, 1, 0, 1],
+        'L3': [0, 0, 1, 0],
+        'L4': [1, 0, 0, 1]
+    })
+    pred_scores = pd.DataFrame({
+        'L1': [1.0, 0.5, 0.0, 0.6],
+        'L2': [0.3, 0.4, 0.1, 0.9],
+        'L3': [0.2, 0.6, 0.7, 0.8],
+        'L4': [0.9, 0.5, 0.3, 0.1]
+    })
 
-# Example of loading all measure names
-measures = get_all_measures_names()
-
-# Print all macro-based metrics
-print(measures['macro-based'])
+    res_bipartition = eval.multilabel_bipartition_measures(true_labels, pred_labels)   
+    res_ranking = eval.multilabel_ranking_measures(true_labels, pred_scores)
+    res_curves = eval.multilabel_curves_measures(true_labels, pred_scores)
+    res_lp = eval.multilabel_label_problem_measures(true_labels, pred_labels)
+    
+    print(res_bipartition)
+    print(res_ranking)
+    print(res_curves)
+    print(res_lp)
 ```
 
 If you want to calculate specific metrics, use the evaluation functions, for example:
 
 ```python
-import evaluation as eval
+import measures as ms
 
-true_labels = [...]
-pred_labels = [...]
+average_precision = ms.mlem_average_precision(true_labels, pred_scores)
+precision_atk = ms.mlem_precision_at_k(true_labels, pred_scores)
+coverage = coverage_error(true_labels, pred_scores)
+iserror = ms.mlem_is_error(true_labels, pred_scores)
+margin_loss = ms.mlem_margin_loss(true_labels, pred_scores)       
+ranking_error = ms.mlem_ranking_error(true_labels, pred_scores)       
+ranking_loss = label_ranking_loss(true_labels, pred_scores)
+one_error = ms.mlem_one_error(true_labels, pred_scores)
 
-# Get label-problem specific metrics
-result = eval.multilabel_label_problem_measures(true_labels, pred_labels)
-print(result)
+# Store all metrics in a dictionary
+metrics_dict = {
+        'average_precision': average_precision,
+        'coverage': coverage,
+        'is_error': iserror,
+        'margin_loss': margin_loss,
+        'precision_atk': precision_atk,
+        'ranking_error': ranking_error,
+        'ranking_loss': ranking_loss    
+}
+
+# Converter o dicionário em um DataFrame com colunas "Measure" e "Value"
+metrics_df = pd.DataFrame(list(metrics_dict.items()), columns=['Measure', 'Value'])
+print(metrics_df)
+   
 ```
 
 ## Features
