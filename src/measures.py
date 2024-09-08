@@ -270,6 +270,61 @@ def mlem_ranking(pred_scores: pd.DataFrame) -> pd.DataFrame:
 
 
 
+########################################################################
+#                                                                      #
+########################################################################
+def mlem_one_error(true_labels, pred_scores):
+    """
+    Compute the One Error metric for multi-label classification.
+
+    The One Error metric measures the proportion of instances where the highest-ranked label is not in the set of true labels.
+
+    Parameters:
+    ----------
+    true_labels : pd.DataFrame
+        A DataFrame where each row represents a sample and each column represents a label.
+        The values are binary (0 or 1) indicating the presence or absence of the label.
+    pred_scores : pd.DataFrame
+        A DataFrame where each row represents a sample and each column represents a label.
+        The values are prediction scores for each label.
+
+    Returns:
+    -------
+    float
+        The One Error metric value.
+
+    Example:
+    -------
+    >>> true_labels = pd.DataFrame([[1, 0, 0], [0, 1, 1], [1, 1, 0]], columns=['A', 'B', 'C'])
+    >>> pred_scores = pd.DataFrame([[0.2, 0.5, 0.3], [0.4, 0.2, 0.6], [0.7, 0.1, 0.2]], columns=['A', 'B', 'C'])
+    >>> mlem_one_error(true_labels, pred_scores)
+    0.6666666666666666
+
+    References:
+    ----------
+    Schapire, R. E., & Singer, Y. (2000). BoosTexter: A boosting-based system for text categorization. 
+    Machine Learning, 39(2), 135-168.
+    """
+    # Convert DataFrames to numpy arrays for computation
+    true_labels = true_labels.to_numpy()
+    pred_scores = pred_scores.to_numpy()
+    
+    # Obtain ranking from prediction scores
+    ranking = mlem_ranking(pd.DataFrame(pred_scores, columns=pred_scores.columns))
+    
+    # Determine the highest-ranked label for each sample
+    predicted_labels = np.argmin(ranking.to_numpy(), axis=1)
+    
+    # Compute the One Error metric
+    errors = np.array([1 if true_labels[i, predicted_labels[i]] == 0 else 0 for i in range(true_labels.shape[0])])
+    oe = np.mean(errors)
+    
+    return oe
+
+
+
+
+
 
 ########################################################################
 #                                                                      #
@@ -573,7 +628,6 @@ def mlem_ranking_error(true_labels: pd.DataFrame, pred_scores: pd.DataFrame) -> 
     error_metric = np.mean(np.sum(differences, axis=1))
     
     return error_metric
-
 
 
 

@@ -508,6 +508,76 @@ def multilabel_curves_measures(true_labels: pd.DataFrame, pred_scores: pd.DataFr
 ########################################################################
 #                                                                      #
 ########################################################################
+import pandas as pd
+import numpy as np
+from sklearn.metrics import label_ranking_loss, coverage_error
+
+def mlem_ranking(pred_scores):
+    """
+    Compute the ranking scores based on prediction scores. This is a placeholder function.
+
+    Parameters:
+    ----------
+    pred_scores : pd.DataFrame
+        A DataFrame where each row represents a sample and each column represents a label.
+        The values are prediction scores for each label.
+
+    Returns:
+    -------
+    pd.DataFrame
+        A DataFrame where each row represents a sample and each column represents a label.
+        The values indicate the ranking score for each label, where lower values mean higher rank.
+    """
+    # Placeholder function: replace with actual ranking function
+    return pred_scores.rank(axis=1, method='min').astype(int)
+
+def mlem_one_error(true_labels: pd.DataFrame, pred_scores: pd.DataFrame) -> float:
+    """
+    Compute the One Error metric for multi-label classification.
+
+    The One Error metric measures the proportion of instances where the highest-ranked label is not in the set of true labels.
+
+    Parameters:
+    ----------
+    true_labels : pd.DataFrame
+        A DataFrame where each row represents a sample and each column represents a label.
+        The values are binary (0 or 1) indicating the presence or absence of the label.
+    pred_scores : pd.DataFrame
+        A DataFrame where each row represents a sample and each column represents a label.
+        The values are prediction scores for each label.
+
+    Returns:
+    -------
+    float
+        The One Error metric value.
+
+    Example:
+    -------
+    >>> true_labels = pd.DataFrame([[1, 0, 0], [0, 1, 1], [1, 1, 0]], columns=['A', 'B', 'C'])
+    >>> pred_scores = pd.DataFrame([[0.2, 0.5, 0.3], [0.4, 0.2, 0.6], [0.7, 0.1, 0.2]], columns=['A', 'B', 'C'])
+    >>> mlem_one_error(true_labels, pred_scores)
+    0.6666666666666666
+
+    References:
+    ----------
+    Schapire, R. E., & Singer, Y. (2000). BoosTexter: A boosting-based system for text categorization. 
+    Machine Learning, 39(2), 135-168.
+    """
+    true_labels = true_labels.to_numpy()
+    pred_scores = pred_scores.to_numpy()
+    
+    # Obtain ranking from prediction scores
+    ranking = mlem_ranking(pd.DataFrame(pred_scores, columns=pred_scores.columns))
+    
+    # Determine the highest-ranked label for each sample
+    predicted_labels = np.argmin(ranking.to_numpy(), axis=1)
+    
+    # Compute the One Error metric
+    errors = np.array([1 if true_labels[i, predicted_labels[i]] == 0 else 0 for i in range(true_labels.shape[0])])
+    oe = np.mean(errors)
+    
+    return oe
+
 def multilabel_ranking_measures(true_labels: pd.DataFrame, pred_scores: pd.DataFrame) -> pd.DataFrame:
     """
     Calculates various ranking-based evaluation metrics for multi-label classification.
@@ -530,6 +600,7 @@ def multilabel_ranking_measures(true_labels: pd.DataFrame, pred_scores: pd.DataF
     - Margin Loss
     - Ranking Error
     - Ranking Loss
+    - One Error
 
     Interpretation:
     ----------------
@@ -575,6 +646,14 @@ def multilabel_ranking_measures(true_labels: pd.DataFrame, pred_scores: pd.DataF
         - A value of approximately 0.67 indicates that about 67% of label pairs are ranked incorrectly.
         - Lower values are preferred, indicating that the majority of label pairs are ranked correctly.
 
+    7. **One Error**
+        Definition: Measures the proportion of instances where the highest-ranked label is not in the set 
+        of true labels.
+        - A value of 0.0 indicates that for every instance, the highest-ranked label is always a true label.
+        - A value of 1.0 indicates that for every instance, the highest-ranked label is never a true label.
+        - Lower values are better, indicating that the model is effective at ranking at least one relevant
+        label as the highest-ranked label for each instance.
+
     References:
     ----------
     - The metrics used are commonly referenced in multi-label ranking evaluation literature and libraries.
@@ -583,6 +662,8 @@ def multilabel_ranking_measures(true_labels: pd.DataFrame, pred_scores: pd.DataF
 
     Examples:
     ----------
+    >>> true_labels = pd.DataFrame([[1, 0, 0], [0, 1, 1], [1, 1, 0]], columns=['A', 'B', 'C'])
+    >>> pred_scores = pd.DataFrame([[0.2, 0.5, 0.3], [0.4, 0.2, 0.6], [0.7, 0.1, 0.2]], columns=['A', 'B', 'C'])
     >>> result_df = multilabel_ranking_measures(true_labels, pred_scores)
     >>> print(result_df)
     """
@@ -595,6 +676,7 @@ def multilabel_ranking_measures(true_labels: pd.DataFrame, pred_scores: pd.DataF
     margin_loss = ms.mlem_margin_loss(true_labels, pred_scores)       
     ranking_error = ms.mlem_ranking_error(true_labels, pred_scores)       
     ranking_loss = label_ranking_loss(true_labels, pred_scores)       
+    one_error = mlem_one_error(true_labels, pred_scores)
 
     # Store all metrics in a dictionary
     metrics_dict = {    
@@ -604,13 +686,11 @@ def multilabel_ranking_measures(true_labels: pd.DataFrame, pred_scores: pd.DataF
         'margin_loss': margin_loss,
         'precision_atk': precision_atk,
         'ranking_error': ranking_error,
-        'ranking_loss': ranking_loss    
+        'ranking_loss': ranking_loss,    
+        'one_error': one_error
     }
 
     # Convert dictionary to DataFrame
-    # metrics_df = pd.DataFrame([metrics_dict])
-    
-    # Converter o dicionário em um DataFrame com colunas "Measure" e "Value"
     metrics_df = pd.DataFrame(list(metrics_dict.items()), columns=['Measure', 'Value'])
 
     return metrics_df
