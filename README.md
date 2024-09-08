@@ -7,7 +7,7 @@ A Python implementation of various metrics for evaluating multi-label classifica
 ```plaintext
 @misc{MLEM2024,
   author = {Elaine Cecília Gatto},
-  title = {Multilabel Evalation Metrics: a python implementatior for multilabel classification and multilabel ranking models evaluation},  
+  title = {Multilabel Evalation Metrics: a python implementation for multilabel classification and multilabel ranking models evaluation},  
   year = {2024},  
   doi = {},
   url = {https://github.com/cissagatto/MultiLabelEvaluationMetrics}
