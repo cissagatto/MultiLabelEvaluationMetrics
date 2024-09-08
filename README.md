@@ -34,6 +34,8 @@ To install and use the metrics, follow these steps:
 The metrics can be directly called to evaluate your multi-label classification models. Here's a sample usage:
 
 ```python
+import evaluation as eval
+
 # Sample data
     true_labels = pd.DataFrame({
         'L1': [1, 0, 1, 1],
