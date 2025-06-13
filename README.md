@@ -2,6 +2,9 @@
 
 A Python implementation of various metrics for evaluating multi-label classification models. This package offers a hierarchical organization of metrics, some of which were implemented from scratch, while others are derived from **scikit-learn**.
 
+## ATTENTION
+CLP, MLP and WLP measures are not working correctly. I'm working on to fix the issue.
+
 ## How to Cite
 
 ```plaintext
