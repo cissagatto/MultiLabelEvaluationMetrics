@@ -605,7 +605,7 @@ def multilabel_ranking_measures(true_labels: pd.DataFrame, pred_scores: pd.DataF
     margin_loss = ms.mlem_margin_loss(true_labels, pred_scores)       
     ranking_error = ms.mlem_ranking_error(true_labels, pred_scores)       
     ranking_loss = label_ranking_loss(true_labels, pred_scores)       
-    one_error = mlem_one_error(true_labels, pred_scores)
+    one_error = ms.mlem_one_error(true_labels, pred_scores)
 
     # Store all metrics in a dictionary
     metrics_dict = {    

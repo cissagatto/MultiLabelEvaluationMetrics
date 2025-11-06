@@ -61,6 +61,7 @@ sys.path.append('..')
 import pandas as pd
 import evaluation as eval
 
+
 if __name__ == "__main__":
 
     # Sample data
@@ -86,6 +87,8 @@ if __name__ == "__main__":
     res_bipartition = eval.multilabel_bipartition_measures(true_labels, pred_labels)   
     res_ranking = eval.multilabel_ranking_measures(true_labels, pred_scores)
     res_curves = eval.multilabel_curves_measures(true_labels, pred_scores)
+    
+    # CLP, MLP and WLP are not working correctly! I will fix soon...
     res_lp = eval.multilabel_label_problem_measures(true_labels, pred_labels)
     
     print(res_bipartition)

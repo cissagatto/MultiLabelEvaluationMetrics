@@ -307,7 +307,7 @@ def mlem_one_error(true_labels, pred_scores):
     """
     # Convert DataFrames to numpy arrays for computation
     true_labels = true_labels.to_numpy()
-    pred_scores = pred_scores.to_numpy()
+    #pred_scores = pred_scores.to_numpy()    
     
     # Obtain ranking from prediction scores
     ranking = mlem_ranking(pd.DataFrame(pred_scores, columns=pred_scores.columns))
